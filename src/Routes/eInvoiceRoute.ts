@@ -1,8 +1,8 @@
 import { Router } from "express";
+import { createEInvoice } from "../Controllers/eInvoiceController";
 
 const router = Router();
 
-router.get('e-invoice', );
-router.post('e-invoice', );
+router.post('/generate-invoice', createEInvoice);
 
 export default router;

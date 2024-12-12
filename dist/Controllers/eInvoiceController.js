@@ -1,19 +1,20 @@
-import { Request, Response } from "express";
-import builder from 'xmlbuilder';
-import { InvoiceDetails } from "../types/invoiceDetails";
-
-export const createEInvoice = (req: Request, res: Response) => {
-    const { buyerName, sellerName, vatNumber, totalAmount }: InvoiceDetails = req.body;
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createEInvoice = void 0;
+const xmlbuilder_1 = __importDefault(require("xmlbuilder"));
+const createEInvoice = (req, res) => {
+    const { buyerName, sellerName, vatNumber, totalAmount } = req.body;
     if (!buyerName || !sellerName || !vatNumber || !totalAmount) {
         res.status(400).json({ message: "Invalid Data Provided" });
-    };
-
+    }
+    ;
     const vatRate = 0.15;
     const vatAmount = totalAmount * vatRate;
     const totalWithVat = totalAmount + vatAmount;
-
-    const invoice = builder.create('Invoice')
+    const invoice = xmlbuilder_1.default.create('Invoice')
         .ele('Seller')
         .ele('Name', sellerName).up()
         .ele('VATNumber', vatNumber).up()
@@ -26,7 +27,8 @@ export const createEInvoice = (req: Request, res: Response) => {
         .ele('VATAmount', vatAmount).up()
         .ele('TotalWithVat', totalWithVat).up()
         .ele('Currency', 'SAR').up()
-        .end({ pretty: true });;
-
-    res.status(200).json({invoiceXML: invoice});
-}
+        .end({ pretty: true });
+    ;
+    res.status(200).json({ invoiceXML: invoice });
+};
+exports.createEInvoice = createEInvoice;
