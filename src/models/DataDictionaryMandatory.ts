@@ -1,0 +1,62 @@
+export interface DataDictionaryMandatory {
+    orgLogo: string;
+    branch: string;
+    crNum: string;
+    cashierName: string;
+    orderNum: string;
+    businessProccessType: string;
+    invoiceNumber: string;
+    uuid: string;
+    invoiceIssueDate: Date;
+    invoiceIssueTime: string;
+    invoiceTypeCode: "380" | "381" | "383" | "386" | "389" | "390" | "393" | "394";
+    invoiceTypeTransaction: string;
+    invoiceCurrencyCode: string;
+    taxCurrencyCode: string;
+    billingId: string;
+    invoiceCounterValue: string;
+    prevInvoiceHash: string;
+    invoiceQrCode: string;
+    cryptographicStamp: string;
+    addressStreet: string;
+    addressBuildingNum: string;
+    addressCity: string;
+    addressPostalCode: string;
+    addressDistrict: string;
+    addressCountryCode: string;
+    vatRegisterationNum: string;
+    sellerName: string;
+    reasonForDebitOrCredit: string;
+    sumOILNA: number;
+    currencySOILNA: string;
+    invoiceTANoVat: number;
+    currencyTANoVat: string;
+    invoiceTVATA: number;
+    currencyTVATA: string;
+    invoiceTVatAIAC: number;
+    currencyTVatAIAC: string;
+    invoiceTAWithVat: number;
+    currencyTAWithVat: string;
+    ammountDueForPay: number;
+    vatCTA: number;
+    currencyVatCTA: string;
+    vatCatTaxAmount: number;
+    currencyCatTaxAmount: string;
+    vatCatCode: "S" | "Z" | "E" | "O";
+    vatCatRate: number;
+    taxSchemeId: string;
+    invoiceLine: [
+        {
+            invoiceLineId: string;
+            invoiceQty: number;
+            invoiceLineNetAmount: number;
+            currencyILNA: string;
+            itemName: string;
+            itemNetPrice: number;
+            currencyINP: string;
+        }
+    ];
+    invoiceIVatCC: "S" | "Z" | "E" | "O";
+    invoiceIVatR: number;
+    taxSchemeIdTow: string;
+}

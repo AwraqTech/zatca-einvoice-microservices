@@ -1,0 +1,11 @@
+2024-12-14 01:37:20 [INFO]: Invoice INV-1001 generated successfully.
+2024-12-14 01:54:58 [ERROR]: Error generating invoice: "sellerVATNumber" with value "123456789012345" fails to match the required pattern: /^\d{10}$/
+2024-12-14 01:57:57 [ERROR]: Error generating invoice: "currencyCode" is not allowed
+2024-12-14 02:01:47 [INFO]: Invoice INV-2024-00123 generated successfully.
+2024-12-14 02:09:39 [INFO]: Invoice INV-2024-00123 generated successfully.
+2024-12-14 02:19:25 [ERROR]: Error generating invoice: "sellerVATNumber" with value "1234567890" fails to match the required pattern: /^\d{15}$/
+2024-12-14 02:19:54 [ERROR]: Error generating invoice: "sellerBusinessID" is not allowed
+2024-12-14 02:21:15 [INFO]: Invoice INV-2024-001 generated successfully.
+2024-12-14 02:25:49 [INFO]: Invoice INV20241214-001 generated successfully.
+2024-12-14 02:30:25 [ERROR]: Error generating invoice: "qrCode" is required
+2024-12-14 12:21:34 [INFO]: Invoice INV20241214-001 generated successfully.
