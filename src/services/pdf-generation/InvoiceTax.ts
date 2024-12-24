@@ -26,10 +26,15 @@ export async function invoiceTaxGenerationPdf(data: DataDictionaryMandatory, qrc
     const doc = new PDFDocument({ font: './src/assets/fonts/IBMPlexSansArabic-Medium.ttf', size: [219, totalHeight], margin: 10 });
 
     const middleX = doc.page.width / 2;
-    const date = new Date().toISOString().split("T")[0];
-    const time = new Date();
 
-    const formattedTime = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}:${time.getSeconds().toString().padStart(2, '0')}`;
+    const issueDate =
+        typeof data.invoiceIssueDate === "string"
+            ? (data.invoiceIssueDate as string).split("-").reverse().join("/")
+            : new Date(data.invoiceIssueDate as Date).toLocaleDateString("en-GB");
+
+    const issueTime = typeof data.invoiceIssueTime === "string"
+        ? data.invoiceIssueTime
+        : new Date(data.invoiceIssueTime).toISOString();
 
     try {
         const response = await axios({
@@ -67,7 +72,7 @@ export async function invoiceTaxGenerationPdf(data: DataDictionaryMandatory, qrc
     doc.fontSize(7)
         .text('التاريخ و الوقت:', 10, 150, { features: ['rtla'], align: 'right' })
         .text('Date & Time:', 10, 150, { align: 'left' })
-        .text(`${date} - ${formattedTime}`, 20, 150, { align: 'center' });
+        .text(`${issueDate} - ${issueTime}`, 20, 150, { align: 'center' });
 
     doc.fontSize(7)
         .text('السجل التجاري:', 10, 165, { features: ['rtla'], align: 'right' })

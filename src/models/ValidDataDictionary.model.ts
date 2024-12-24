@@ -16,7 +16,7 @@ export const dataDictionaryMandatorySchema = Joi.object({
         .pattern(/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/) // HH:mm:ss format
         .required(),
     invoiceTypeCode: Joi.string()
-        .valid("380", "381", "383", "386", "389", "390", "393", "394")
+        .valid("388", "381", "383")
         .required(),
     invoiceTypeTransaction: Joi.string()
         .pattern(/^0[12][01][01][01][01][01]$/) // Matches the specific structure NNPNESB
@@ -85,13 +85,14 @@ export const dataDictionaryMandatorySchema = Joi.object({
             itemName: Joi.string().required(),
             itemNetPrice: Joi.number().required(),
             currencyINP: Joi.string().required(), // INP short form of (Item Net Price)
+            invoiceIVatCC: Joi.string()
+                .valid("S", "Z", "E", "O") // Example subset of UNCL5305
+                .required(), // IVatCC short form of (Item VAT Category Code)
+            invoiceIVatR: Joi.number().required(), // IVatR short form of (Item VAT Rate)
+            taxSchemeId: Joi.string().required()
         })
     ).required(),
-    invoiceIVatCC: Joi.string()
-        .valid("S", "Z", "E", "O") // Example subset of UNCL5305
-        .required(), // IVatCC short form of (Item VAT Category Code)
-    invoiceIVatR: Joi.number().required(), // IVatR short form of (Item VAT Rate)
-    taxSchemeIdTow: Joi.string().required(),
+
 });
 
 // Helper function for validation

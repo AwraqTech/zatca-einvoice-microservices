@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { validateDataDictionaryMandatory } from "../models/ValidDataDictionary.model";
-import { invoiceTaxGenerationPdf } from "../services/pdf-generation/InvoiceTax";
 import { DataDictionaryMandatory } from "../models/DataDictionaryMandatory";
 import { generateQRCodeBase64 } from "../helpers/qrCodeGenEcode";
+import { generateUBLXml } from "../services/xml-ubl-generation/simplifiedTax";
+import { generateQRCodeBase64XML } from "../helpers/qrCodeXMLTLVBase64";
 
-export async function generateInvoiceController(req: Request, res: Response) {
+export async function generateInvoiceXMLController(req: Request, res: Response) {
     try {
         const data: DataDictionaryMandatory = req.body;
 
@@ -21,25 +22,20 @@ export async function generateInvoiceController(req: Request, res: Response) {
             : new Date(validatedData.invoiceIssueTime).toISOString(); // Convert to Date if needed
 
         // Generate QR Code
-        const qrCodeBase64 = await generateQRCodeBase64({
+        const encodedTLVBase64 = await generateQRCodeBase64XML({
             sellerName: validatedData.sellerName,
             vatRegNum: validatedData.vatRegisterationNum,
             date: issueDate,
             time: issueTime,
-            invTotalWithVat: validatedData.invoiceTVATA.toString(),
+            invTotalWithVat: validatedData.invoiceTAWithVat.toString(),
             vatTotal: validatedData.invoiceTVATA.toString(),
         });
 
-        // Generate PDF document
-        const doc = invoiceTaxGenerationPdf(validatedData, qrCodeBase64);
+        // Generate XML document
+        const xml = generateUBLXml(validatedData, encodedTLVBase64);
 
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader("Content-Disposition", `attachment; filename="${data.invoiceNumber}.pdf"`);
-
-        // Pipe the PDF document to the response
-        (await doc).pipe(res);
-        (await doc).end();
-
+        res.set("Content-Type", "application/xml");
+        res.send(xml);
     } catch (error: any) {
         res.status(500).send({
             message: "Failed to generate PDF",

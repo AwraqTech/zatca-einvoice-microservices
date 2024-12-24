@@ -9,7 +9,7 @@ export interface DataDictionaryMandatory {
     uuid: string;
     invoiceIssueDate: Date;
     invoiceIssueTime: string;
-    invoiceTypeCode: "380" | "381" | "383" | "386" | "389" | "390" | "393" | "394";
+    invoiceTypeCode: "388" | "381" | "383";
     invoiceTypeTransaction: string;
     invoiceCurrencyCode: string;
     taxCurrencyCode: string;
@@ -54,9 +54,9 @@ export interface DataDictionaryMandatory {
             itemName: string;
             itemNetPrice: number;
             currencyINP: string;
+            invoiceIVatCC: "S" | "Z" | "E" | "O";
+            invoiceIVatR: number;
+            taxSchemeId: string;
         }
     ];
-    invoiceIVatCC: "S" | "Z" | "E" | "O";
-    invoiceIVatR: number;
-    taxSchemeIdTow: string;
 }
