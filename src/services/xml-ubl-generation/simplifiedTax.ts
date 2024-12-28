@@ -8,10 +8,11 @@ export function generateUBLXml(data: DataDictionaryMandatory, qrCode: string): s
             "xmlns:cac": "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2",
             "xmlns:cbc": "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
             "xmlns:ext": "urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2",
+            "xmlns:xsd": "http://www.w3.org/2001/XMLSchema"
         });
 
     doc
-        // Seller Information
+        // Invoice Information
         .ele("cbc:ProfileID").txt(data.businessProccessType).up()
         .ele("cbc:ID").txt(data.invoiceNumber).up()
         .ele("cbc:UUID").txt(data.uuid).up()
@@ -54,6 +55,7 @@ export function generateUBLXml(data: DataDictionaryMandatory, qrCode: string): s
         .ele("cac:PostalAddress")
         .ele("cbc:StreetName").txt(data.addressStreet).up()
         .ele("cbc:BuildingNumber").txt(data.addressBuildingNum).up()
+        .ele("cbc:CitySubdivisionName").txt(data.addressDistrict).up()
         .ele("cbc:CityName").txt(data.addressCity).up()
         .ele("cbc:PostalZone").txt(data.addressPostalCode).up()
         .ele("cac:Country")
@@ -69,10 +71,33 @@ export function generateUBLXml(data: DataDictionaryMandatory, qrCode: string): s
         .ele("cbc:RegistrationName").txt(data.sellerName).up()
         .up();
 
-    // // Payment Means
-    // doc.ele("cac:PaymentMeans")
-    //     .ele("cbc:InstructionNote").txt(data.reasonForDebitOrCredit).up()
-    //     .up();
+        // Accounting Customer Party
+        // this i will modify the data later
+        const customer = doc.ele("cac:AccountingCustomerParty").ele("cac:Party");
+        customer.ele("cac:PostalAddress")
+        .ele("cbc:StreetName").txt("صلاح الدين | Salah Al-Din").up()
+        .ele("cbc:BuildingNumber").txt("1111").up()
+        .ele("cbc:CitySubdivisionName").txt("المروج | Al-Muroo").up()
+        .ele("cbc:CityName").txt("الرياض | Riyad").up()
+        .ele("cbc:PostalZone").txt("12222").up()
+        .ele("cac:Country")
+        .ele("cbc:IdentificationCode").txt("SA").up()
+        .up()
+        .up()
+        .ele("cac:PartyTaxScheme")
+        .ele("cbc:CompanyID").txt("399999999800003").up()
+        .ele("cac:TaxScheme")
+        .ele("cbc:ID").txt("VAT").up()
+        .up()
+        .up()
+        .ele("cac:PartyLegalEntity")
+        .ele("cbc:RegistrationName").txt("Nsesg").up()
+        .up();
+
+    // Payment Means
+    doc.ele("cac:PaymentMeans")
+        .ele("cbc:PaymentMeansCode").txt("10").up()
+        .up();
 
     // Tax Total
     const taxTotal = doc.ele("cac:TaxTotal");
@@ -105,7 +130,7 @@ export function generateUBLXml(data: DataDictionaryMandatory, qrCode: string): s
             .ele("cbc:ID").txt(line.invoiceLineId).up()
             .ele("cbc:InvoicedQuantity", { unitCode: "PCE" }).txt(line.invoiceQty.toFixed(6)).up()
             .ele("cbc:LineExtensionAmount", { currencyID: line.currencyILNA }).txt(line.invoiceLineNetAmount.toFixed(2)).up()
-            .ele("cbc:TaxTotal")
+            .ele("cac:TaxTotal")
 
             // these 2 tags i need to know from where i get them
             .ele("cbc:TaxAmount", { currencyID: data.currencyTVATA }).txt(`${data.invoiceTVATA}`).up()
