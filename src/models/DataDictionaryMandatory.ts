@@ -45,6 +45,15 @@ export interface DataDictionaryMandatory {
     vatCatCode: "S" | "Z" | "E" | "O";
     vatCatRate: number;
     taxSchemeId: string;
+    customerAddressStreet: string;
+    customerAddressBuildingNum: string;
+    customerAddressDistrict: string;
+    customerAddressCity: string;
+    customerAddressCountryCode: string;
+    customerVatNumber: string;
+    customerName: string;
+    customerAddressPostalCode: string;
+    paymentMeansCode: string;
     invoiceLine: [
         {
             invoiceLineId: string;

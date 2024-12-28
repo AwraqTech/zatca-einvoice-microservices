@@ -73,6 +73,15 @@ export const dataDictionaryMandatorySchema = Joi.object({
         .max(100.0) // Range: 0.00 to 100.00
         .required(),
     taxSchemeId: Joi.string().required(),
+    customerAddressStreet: Joi.string().required(),
+    customerAddressBuildingNum: Joi.string().required(),
+    customerAddressDistrict: Joi.string().required(),
+    customerAddressCity: Joi.string().required(),
+    customerAddressCountryCode: Joi.string().required(),
+    customerVatNumber: Joi.string().required().pattern(/^\d{15}$/),
+    customerName: Joi.string().required(),
+    customerAddressPostalCode: Joi.string().required(),
+    paymentMeansCode: Joi.string().required(),
     invoiceLine: Joi.array().items(
         Joi.object({
             invoiceLineId: Joi.string().required(),
@@ -92,7 +101,6 @@ export const dataDictionaryMandatorySchema = Joi.object({
             taxSchemeId: Joi.string().required()
         })
     ).required(),
-
 });
 
 // Helper function for validation
