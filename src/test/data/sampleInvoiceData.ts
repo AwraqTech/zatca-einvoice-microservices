@@ -2,7 +2,7 @@ import { Invoice } from "../../models/InvoiceXML";
 
 const sampleInvoiceData: Invoice = {
     profileId: "12345",
-    id: "INV-001",
+    id: "SME00010",
     uuid: "123e4567-e89b-12d3-a456-426614174000",
     issueDate: "2024-01-01T00:00:00Z",
     issueTime: "12:30:45",
@@ -75,7 +75,7 @@ const sampleInvoiceData: Invoice = {
     taxTotals: [
         {
             taxAmount: { currencyId: "SAR", value: 150 },
-            roundingAmount: 0.01,
+            roundingAmount: 0.00,
             taxSubtotals: [
                 {
                     taxableAmount: { currencyId: "SAR", value: 1000 },
