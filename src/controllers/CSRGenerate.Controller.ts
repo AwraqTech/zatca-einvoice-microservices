@@ -69,6 +69,8 @@ export default async function csrGenerationController(req: Request, res: Respons
       requestID: complianceRequestId,
     } = complianceResponse.data;
 
+    console.log(userName);
+
     // Step 2: Call CSIDs API
     const csidsResponse = await axios.post(
       "https://gw-fatoora.zatca.gov.sa/e-invoicing/developer-portal/production/csids",
