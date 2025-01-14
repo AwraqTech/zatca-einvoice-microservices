@@ -4,6 +4,7 @@ export interface Invoice {
     uuid: string;
     issueDate: string;
     issueTime: string;
+    invoiceCounterValue: number;
     invoiceTypeCode: { name: string; value: string };
     documentCurrencyCode: string;
     taxCurrencyCode: string;
@@ -79,9 +80,11 @@ interface TaxSubtotal {
 interface LegalMonetaryTotal {
     lineExtensionAmount: { currencyId: string; value: number };
     taxExclusiveAmount: { currencyId: string; value: number };
+    chargeTotalAmount: { currencyId: string; value: number };
     taxInclusiveAmount: { currencyId: string; value: number };
     allowanceTotalAmount: { currencyId: string; value: number };
     prepaidAmount: { currencyId: string; value: number };
+    PayableRoundingAmount: { currencyId: string; value: number };
     payableAmount: { currencyId: string; value: number };
 }
 

@@ -17,8 +17,8 @@ export default function generateInvoiceXML(invoiceData: Invoice) {
         }
     };
 
-    const calculatedTaxExclusiveAmount = invoiceData.invoiceLines.reduce((sum, line) => sum + line.lineExtensionAmount.value, 0)
-        - sumOfAllowances;
+    const calculatedLineExtintion = invoiceData.invoiceLines.reduce((sum, line) => sum + line.lineExtensionAmount.value, 0);
+    const calculatedTaxExclusiveAmount = calculatedLineExtintion - sumOfAllowances + sumOfCharges;
 
     const xmlDoc = create({ version: '1.0', encoding: 'UTF-8' })
         .ele('Invoice', {
@@ -28,6 +28,9 @@ export default function generateInvoiceXML(invoiceData: Invoice) {
             'xmlns:ext': 'urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2'
         });
 
+        xmlDoc.ele('ext:UBLExtensions').txt(`\nUBL_EXTENSION_CONTENT\n`).up();
+        xmlDoc.txt(`\n`).up();
+
     invoiceData.taxTotals.forEach(tt => {
         if (tt.taxSubtotals) {
             tt.taxSubtotals.forEach(ts => {
@@ -35,23 +38,6 @@ export default function generateInvoiceXML(invoiceData: Invoice) {
             });
         }
     });
-
-    // Add UBLExtensions
-    // const ublExtensions = xmlDoc.ele('ext:UBLExtensions')
-    //     .ele('ext:UBLExtension')
-    //     .ele('ext:ExtensionContent')
-    //     .ele('sig:UBLDocumentSignatures', {
-    //         'xmlns:sig': 'urn:oasis:names:specification:ubl:schema:xsd:CommonSignatureComponents-2',
-    //         'xmlns:sac': 'urn:oasis:names:specification:ubl:schema:xsd:SignatureAggregateComponents-2',
-    //         'xmlns:sbc': 'urn:oasis:names:specification:ubl:schema:xsd:SignatureBasicComponents-2',
-    //         'xmlns:xades': "urn:oasis:names:specification:ubl:schema:xsd:XAdESv141-2"
-    //     })
-    //     .ele('sac:SignatureInformation')
-    //     .ele('cbc:ID').txt('urn:oasis:names:specification:ubl:signature:1').up()
-    //     .ele('sbc:ReferencedSignatureID').txt('urn:oasis:names:specification:ubl:signature:Invoice').up()
-    //     .ele('ds:Signature', { 'xmlns:ds': "http://www.w3.org/2000/09/xmldsig#", Id: "signature" })
-    //     .ele('ds:SignedInfo').up()
-    //     .up().up().up().up().up();
 
     // Basic Invoice Details
     xmlDoc.ele('cbc:ProfileID').txt('reporting:1.0').up()
@@ -80,9 +66,9 @@ export default function generateInvoiceXML(invoiceData: Invoice) {
         }
     });
 
-    // PaymentMeans
-    xmlDoc.ele('cac:PaymentMeans')
-        .ele('cbc:PaymentMeansCode').txt(invoiceData.paymentMeans.code).up()
+    const signature = xmlDoc.ele('cac:Signature');
+        signature.ele('cbc:ID').txt(`urn:oasis:names:specification:ubl:signature:Invoice`).up();
+        signature.ele('cbc:SignatureMethod').txt(`urn:oasis:names:specification:ubl:dsig:enveloped:xades`).up()
         .up();
 
     // Parties
@@ -118,6 +104,11 @@ export default function generateInvoiceXML(invoiceData: Invoice) {
     addParty(invoiceData.accountingSupplierParty, 'AccountingSupplierParty');
     addParty(invoiceData.accountingCustomerParty, 'AccountingCustomerParty');
 
+    // PaymentMeans
+    xmlDoc.ele('cac:PaymentMeans')
+        .ele('cbc:PaymentMeansCode').txt(invoiceData.paymentMeans.code).up()
+        .up();
+
     // AllowanceCharges
     invoiceData.allowanceCharges.forEach(charge => {
         const allowanceChargeElement = xmlDoc.ele('cac:AllowanceCharge');
@@ -132,6 +123,10 @@ export default function generateInvoiceXML(invoiceData: Invoice) {
             .up()
             .up();
     });
+
+    // TaxTotal
+    const taxTotal = xmlDoc.ele('cac:TaxTotal');
+    taxTotal.ele('cbc:TaxAmount', { currencyID: invoiceData.taxTotals[0].taxAmount.currencyId }).txt(`${invoiceData.taxTotals[0].taxAmount.value}`).up();
 
     // TaxTotal and TaxSubtotals
     invoiceData.taxTotals.forEach(taxTotal => {
@@ -157,12 +152,14 @@ export default function generateInvoiceXML(invoiceData: Invoice) {
     // LegalMonetaryTotal
     const legalMonetaryTotal = invoiceData.legalMonetaryTotal;
     const legalMonetaryTotalElement = xmlDoc.ele('cac:LegalMonetaryTotal');
-    legalMonetaryTotalElement.ele('cbc:LineExtensionAmount', { currencyID: legalMonetaryTotal.lineExtensionAmount.currencyId }).txt(`${calculatedTaxExclusiveAmount}`).up()
+    legalMonetaryTotalElement.ele('cbc:LineExtensionAmount', { currencyID: legalMonetaryTotal.lineExtensionAmount.currencyId }).txt(`${calculatedLineExtintion}`).up()
         .ele('cbc:TaxExclusiveAmount', { currencyID: legalMonetaryTotal.taxExclusiveAmount.currencyId }).txt(`${calculatedTaxExclusiveAmount}`).up()
-        .ele('cbc:TaxInclusiveAmount', { currencyID: legalMonetaryTotal.taxInclusiveAmount.currencyId }).txt(`${legalMonetaryTotal.taxInclusiveAmount.value}`).up()
+        .ele('cbc:TaxInclusiveAmount', { currencyID: legalMonetaryTotal.taxInclusiveAmount.currencyId }).txt(`${calculatedTaxExclusiveAmount + invoiceData.taxTotals[0].taxAmount.value}`).up()
         .ele('cbc:AllowanceTotalAmount', { currencyID: legalMonetaryTotal.allowanceTotalAmount.currencyId }).txt(`${sumOfAllowances}`).up()
+        .ele('cbc:ChargeTotalAmount', { currencyID: legalMonetaryTotal.chargeTotalAmount.currencyId }).txt(`${sumOfCharges}`).up()
         .ele('cbc:PrepaidAmount', { currencyID: legalMonetaryTotal.prepaidAmount.currencyId }).txt(`${legalMonetaryTotal.prepaidAmount.value}`).up()
-        .ele('cbc:PayableAmount', { currencyID: legalMonetaryTotal.payableAmount.currencyId }).txt(`${legalMonetaryTotal.taxInclusiveAmount.value - legalMonetaryTotal.prepaidAmount.value}`).up();
+        .ele('cbc:PayableRoundingAmount', { currencyID: legalMonetaryTotal.PayableRoundingAmount.currencyId }).txt(`${legalMonetaryTotal.PayableRoundingAmount.value}`).up()
+        .ele('cbc:PayableAmount', { currencyID: legalMonetaryTotal.payableAmount.currencyId }).txt(`${(calculatedTaxExclusiveAmount + invoiceData.taxTotals[0].taxAmount.value) - legalMonetaryTotal.prepaidAmount.value + legalMonetaryTotal.PayableRoundingAmount.value}`).up();
 
     // Invoice Lines
     invoiceData.invoiceLines.forEach(line => {

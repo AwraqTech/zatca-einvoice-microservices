@@ -20,18 +20,8 @@ export async function generateInvoiceController(req: Request, res: Response) {
             ? validatedData.invoiceIssueTime
             : new Date(validatedData.invoiceIssueTime).toISOString(); // Convert to Date if needed
 
-        // Generate QR Code
-        const qrCodeBase64 = await generateQRCodeBase64({
-            sellerName: validatedData.sellerName,
-            vatRegNum: validatedData.vatRegisterationNum,
-            date: issueDate,
-            time: issueTime,
-            invTotalWithVat: validatedData.invoiceTVATA.toString(),
-            vatTotal: validatedData.invoiceTVATA.toString(),
-        });
-
         // Generate PDF document
-        const doc = invoiceTaxGenerationPdf(validatedData, qrCodeBase64);
+        const doc = invoiceTaxGenerationPdf(validatedData, '');
 
         res.setHeader("Content-Type", "application/pdf");
         res.setHeader("Content-Disposition", `attachment; filename="${data.invoiceNumber}.pdf"`);

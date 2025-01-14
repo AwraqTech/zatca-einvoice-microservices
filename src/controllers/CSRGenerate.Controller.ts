@@ -35,7 +35,7 @@ export default async function csrGenerationController(req: Request, res: Respons
 
   try {
     // Generate CSR
-    const { csrPem } = generateCSR(
+    const { csrPem, privateKeyPem, publicKeyPem } = generateCSR(
       commonName,
       serialNumber,
       organizationIdentifier,
@@ -90,6 +90,8 @@ export default async function csrGenerationController(req: Request, res: Respons
     res.status(200).json({
       username: encryptedUsername,
       password: encryptedPassword,
+      privateKey: privateKeyPem,
+      cleanPublicKey: publicKeyPem
     });
   } catch (error: any) {
     console.error("CSR Generation Error:", error?.response?.data || error.message);

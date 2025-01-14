@@ -21,18 +21,8 @@ export async function generateInvoiceXMLController(req: Request, res: Response) 
             ? validatedData.invoiceIssueTime
             : new Date(validatedData.invoiceIssueTime).toISOString(); // Convert to Date if needed
 
-        // Generate QR Code
-        const encodedTLVBase64 = await generateQRCodeBase64XML({
-            sellerName: validatedData.sellerName,
-            vatRegNum: validatedData.vatRegisterationNum,
-            date: issueDate,
-            time: issueTime,
-            invTotalWithVat: validatedData.invoiceTAWithVat.toString(),
-            vatTotal: validatedData.invoiceTVATA.toString(),
-        });
-
         // Generate XML document
-        const xml = generateUBLXml(validatedData, encodedTLVBase64);
+        const xml = generateUBLXml(validatedData);
 
         res.set("Content-Type", "application/xml");
         res.send(xml);

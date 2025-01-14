@@ -6,6 +6,7 @@ const sampleInvoiceData: Invoice = {
     uuid: "123e4567-e89b-12d3-a456-426614174000",
     issueDate: "2024-01-01T00:00:00Z",
     issueTime: "12:30:45",
+    invoiceCounterValue: 10,
     invoiceTypeCode: { name: "0200000", value: "388" },
     documentCurrencyCode: "SAR",
     taxCurrencyCode: "SAR",
@@ -13,7 +14,7 @@ const sampleInvoiceData: Invoice = {
     additionalDocumentReferences: [
         {
             id: "ICV",
-            uuid: 300
+            uuid: 10
         },
         {
             id: "PIH",
@@ -88,9 +89,11 @@ const sampleInvoiceData: Invoice = {
     legalMonetaryTotal: {
         lineExtensionAmount: { currencyId: "SAR", value: 1000 },
         taxExclusiveAmount: { currencyId: "SAR", value: 1000 },
+        chargeTotalAmount: { currencyId: "SAR", value: 1000 },
         taxInclusiveAmount: { currencyId: "SAR", value: 1150 },
         allowanceTotalAmount: { currencyId: "SAR", value: 100 },
         prepaidAmount: { currencyId: "SAR", value: 0 },
+        PayableRoundingAmount: { currencyId: "SAR", value: 0 },
         payableAmount: { currencyId: "SAR", value: 1050 }
     },
     invoiceLines: [

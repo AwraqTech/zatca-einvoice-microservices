@@ -254,13 +254,6 @@ export async function invoiceTaxGenerationPdf(data: DataDictionaryMandatory, qrc
         .lineTo(doc.page.width - 10, dynamicYPosition + 50)
         .stroke('black');
 
-    const qrCodeBuffer = Buffer.from(qrcode.split(",")[1], "base64");
-    doc.image(qrCodeBuffer, 34.5, dynamicYPosition + 65, {
-        fit: [150, 150],
-        align: "center",
-        valign: "center",
-    });
-
     doc.fontSize(10)
         .fillColor('black')
         .font('./src/assets/fonts/IBMPlexSansArabic-Medium.ttf')

@@ -1,4 +1,3 @@
-import QRCode from "qrcode";
 import { TLVUtils } from "../services/tlvEncoder";
 
 export async function generateQRCodeBase64XML({
@@ -8,6 +7,10 @@ export async function generateQRCodeBase64XML({
     time,
     invTotalWithVat,
     vatTotal,
+    invoiceHash,
+    publicKey,
+    certificateSignature,
+    digitalSignature
 }: {
     sellerName: string;
     vatRegNum: string;
@@ -15,18 +18,38 @@ export async function generateQRCodeBase64XML({
     time: string;
     invTotalWithVat: string;
     vatTotal: string;
+    invoiceHash: string;
+    publicKey: string;
+    certificateSignature: string;
+    digitalSignature: string;
 }): Promise<string> {
-    const qrCodeBufferArray: Buffer[] = [];
-    qrCodeBufferArray.push(TLVUtils.encodeTLV(1, sellerName));
-    qrCodeBufferArray.push(TLVUtils.encodeTLV(2, vatRegNum));
-    qrCodeBufferArray.push(TLVUtils.encodeTLV(3, date));
-    qrCodeBufferArray.push(TLVUtils.encodeTLV(4, time));
-    qrCodeBufferArray.push(TLVUtils.encodeTLV(5, invTotalWithVat));
-    qrCodeBufferArray.push(TLVUtils.encodeTLV(6, vatTotal));
+    try {
+        // Validate required inputs
+        if (!sellerName || !vatRegNum || !date || !time || !invTotalWithVat || !vatTotal || !invoiceHash || !publicKey || !certificateSignature || !digitalSignature) {
+            throw new Error("Missing required parameters for QR code generation.");
+        }
 
-    const encodedTLV = Buffer.concat(qrCodeBufferArray);
-    const encodedTLVHex = encodedTLV.toString("hex");
-    const encodedTLVBase64 = Buffer.from(encodedTLVHex, "hex").toString("base64");
+        // Create a buffer array for TLV-encoded data
+        const qrCodeBufferArray: Buffer[] = [
+            TLVUtils.encodeTLV(1, sellerName),
+            TLVUtils.encodeTLV(2, vatRegNum),
+            TLVUtils.encodeTLV(3, date),
+            TLVUtils.encodeTLV(4, time),
+            TLVUtils.encodeTLV(5, invTotalWithVat),
+            TLVUtils.encodeTLV(6, vatTotal),
+            TLVUtils.encodeTLV(7, invoiceHash),
+            TLVUtils.encodeTLV(8, digitalSignature),
+            TLVUtils.encodeTLV(9, publicKey),
+            TLVUtils.encodeTLV(10, certificateSignature)
+        ];
 
-    return encodedTLVBase64;
+        // Concatenate buffers and encode to Base64
+        const encodedTLV = Buffer.concat(qrCodeBufferArray);
+        const encodedTLVBase64 = encodedTLV.toString("base64");
+
+        return encodedTLVBase64;
+    } catch (error) {
+        console.error("Error generating QR code:", error);
+        throw new Error("Failed to generate QR code.");
+    }
 }

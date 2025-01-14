@@ -30,107 +30,78 @@ export default function generateCSR(
     industryBusinessCategory: string
 ) {
     try {
-
-        // Prepare the OpenSSL configuration as a string, now in the new format
+        // Prepare the OpenSSL configuration as a string
         const opensslConfig = `
-# ------------------------------------------------------------------
-# Default section for "req" command options
-# ------------------------------------------------------------------
+# Your OpenSSL configuration as provided
 [req]
-
-# Password for reading in existing private key file
-# input_password = SET_PRIVATE_KEY_PASS
-
-# Prompt for DN field values and CSR attributes in ASCII
 prompt = no
 utf8 = no
-
-# Section pointer for DN field options
 distinguished_name = my_req_dn_prompt
-
-# Extensions
 req_extensions = v3_req
 
-[ v3_req ]
-#basicConstraints=CA:FALSE
-#keyUsage = digitalSignature, keyEncipherment
-# Production or Testing Template (TSTZATCA-Code-Signing - ZATCA-Code-Signing)
+[v3_req]
 1.3.6.1.4.1.311.20.2 = ASN1:UTF8String:SET_PRODUCTION_VALUE
 subjectAltName = dirName:dir_sect
 
-[ dir_sect ]
-# EGS Serial number (1-SolutionName|2-ModelOrVersion|3-serialNumber)
+[dir_sect]
 SN = ${serialNumber}
-# VAT Registration number of TaxPayer (Organization identifier [15 digits begins with 3 and ends with 3])
 UID = ${organizationIdentifier}
-# Invoice type (TSCZ)(1 = supported, 0 not supported) (Tax, Simplified, future use, future use)
 title = ${invoiceType}
-# Location (branch address or website)
 registeredAddress = ${locationAddress}
-# Industry (industry sector name)
 businessCategory = ${industryBusinessCategory}
 
-# ------------------------------------------------------------------
-# Section for prompting DN field values to create "subject"
-# ------------------------------------------------------------------
 [my_req_dn_prompt]
-# Common name (EGS TaxPayer PROVIDED ID [FREE TEXT])
 commonName = ${commonName}
-
-# Organization Unit (Branch name)
 organizationalUnitName = ${organizationUnitName}
-
-# Organization name (Tax payer name)
 organizationName = ${organizationName}
-
-# ISO2 country code is required with US as default
 countryName = ${countryName}
 `;
 
-        // Create a temporary file for the OpenSSL configuration
+        // Create a temporary file for OpenSSL configuration
         const tempConfigFile = path.join(tmpdir(), `openssl_config_${Date.now()}.conf`);
         writeFileSync(tempConfigFile, opensslConfig);
 
         // Generate EC parameters for secp256k1
         const ecParamFile = path.join(tmpdir(), `secp256k1_ecparams_${Date.now()}.pem`);
-        execSync('openssl ecparam -name secp256k1 -out ' + ecParamFile);  // Generate EC params for secp256k1
+        execSync('openssl ecparam -name secp256k1 -out ' + ecParamFile);
 
         // Create temporary files to store the key and CSR
         const keyFilePath = path.join(tmpdir(), `private_key_${Date.now()}.pem`);
         const csrFilePath = path.join(tmpdir(), `csr_${Date.now()}.pem`);
+        const publicKeyPath = path.join(tmpdir(), `public_key_${Date.now()}.pem`);
 
-        // Construct the OpenSSL command with -subj to avoid interactive prompts
+        // Generate the CSR and private key
         const opensslCmd = `openssl req -new -newkey ec:${ecParamFile} -keyout ${keyFilePath} -out ${csrFilePath} -config "${tempConfigFile}" -subj "/CN=${commonName}/O=${organizationName}/OU=${organizationUnitName}/C=${countryName}" -nodes`;
+        execSync(opensslCmd, { encoding: 'utf8' });
 
-        // Ensure proper encoding and shell configuration for Windows
-        const options: ExecSyncOptions = { encoding: 'utf8', shell: 'cmd.exe', stdio: ['pipe', 'pipe', 'pipe'] };
+        // Extract the public key from the private key
+        const extractPublicKeyCmd = `openssl ec -in ${keyFilePath} -pubout -out ${publicKeyPath}`;
+        execSync(extractPublicKeyCmd, { encoding: 'utf8' });
 
-        // Execute the command to generate CSR and private key
-        const result: string | Buffer = execSync(opensslCmd, options);
-
-        // If result is Buffer, convert to string
-        const resultString = result.toString('utf8');
-
-        // Log the OpenSSL output
-        console.log('OpenSSL Command Result:', resultString);
-
-        // Read the generated CSR and private key from temporary files
+        // Read the generated files
         const privateKeyPem = readFileSync(keyFilePath, 'utf8');
         const csrPem = readFileSync(csrFilePath, 'utf8');
+        const publicKeyPem = readFileSync(publicKeyPath, 'utf8');
+
+        const publicKeyClean = publicKeyPem
+            .replace(/-----BEGIN PUBLIC KEY-----/g, '')
+            .replace(/-----END PUBLIC KEY-----/g, '')
+            .replace(/\r?\n|\r/g, '')
+            .trim();
 
         // Clean up temporary files
         unlinkSync(tempConfigFile);
         unlinkSync(ecParamFile);
         unlinkSync(keyFilePath);
         unlinkSync(csrFilePath);
+        unlinkSync(publicKeyPath);
 
-        // Return both CSR and private key in PEM format
-        return { csrPem, privateKeyPem };
+        // Return CSR, private key, and public key
+        return { csrPem, privateKeyPem, publicKeyPem, publicKeyClean };
     } catch (error: unknown) {
-        // Handle unknown error type safely
         if (error instanceof Error) {
             console.error('Error:', error.message);
-            throw new Error(`Error generating CSR, Error message: ${error.message}`);
+            throw new Error(`Error generating CSR: ${error.message}`);
         } else {
             console.error('An unknown error occurred while generating CSR.');
             throw new Error('An unknown error occurred while generating CSR.');

@@ -1,7 +1,7 @@
 import { create } from 'xmlbuilder2';
 import { DataDictionaryMandatory } from '../../models/DataDictionaryMandatory';
 
-export function generateUBLXml(data: DataDictionaryMandatory, qrCode: string): string {
+export function generateUBLXml(data: DataDictionaryMandatory): string {
     const doc = create({ version: "1.0", encoding: "UTF-8" })
         .ele("Invoice", {
             xmlns: "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
@@ -34,9 +34,9 @@ export function generateUBLXml(data: DataDictionaryMandatory, qrCode: string): s
         .up()
         .up()
         .ele("cac:AdditionalDocumentReference")
-        .ele("cbc:ID").txt("PIH").up()
+        .ele("cbc:ID").txt("QR").up()
         .ele("cac:Attachment")
-        .ele("cbc:EmbeddedDocumentBinaryObject", { mimeCode: "text/plain" }).txt(qrCode).up()
+        .ele("cbc:EmbeddedDocumentBinaryObject", { mimeCode: "text/plain" }).txt(`QR_CODE_HASHED`).up()
         .up()
         .up();
 
