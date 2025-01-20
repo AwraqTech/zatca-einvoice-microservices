@@ -97,7 +97,7 @@ export default async function csrGenerationController(req: Request, res: Respons
     // Return encrypted credentials
     res.status(200).json({
       binarySecurityToken: complianceResponse.data.binarySecurityToken,
-      secret: csidsResponse.data.secret,
+      secret: complianceResponse.data.secret,
       privateKey: rawPrivateKey
     });
   } catch (error: any) {

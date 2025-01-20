@@ -12,9 +12,9 @@ import { generateQRCodeBase64 } from '../../helpers/qrCodeGenEcode';
 
 export default async function generateValidXMLInvoice(req: Request, res: Response) {
     try {
-        const privateKey = `MIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQgOZoSCv5bJ9lTzHer6oDb\nC4DnnTJed//eUtI3OZeGU2qhRANCAAQ9Z6acv0ZgWy01dgxNx2gHN3BgxIZwvxgw\nGAz7QJl4KEW/KaOxp9BSjQX/xF/yrqVjp8YrXo+OTdFf1KYfMB4l`;
+        const privateKey = `MIGEAgEAMBAGByqGSM49AgEGBSuBBAAKBG0wawIBAQQg0kEmwnqMEgQFUJSObyUU\nCpP3RSzGkBOd/MQHvk5L7buhRANCAASKBP2HS0Sii2RckbeSFMsRLfxzmqqoZY+J\nrcLD0bQm4IiVLgvgseK6gw3gH2eENqjblhpX9XkmTjDuhDsn6bPE`;
 
-        const csid = 'TUlJRDNqQ0NBNFNnQXdJQkFnSVRFUUFBT0FQRjkwQWpzL3hjWHdBQkFBQTRBekFLQmdncWhrak9QUVFEQWpCaU1SVXdFd1lLQ1pJbWlaUHlMR1FCR1JZRmJHOWpZV3d4RXpBUkJnb0praWFKay9Jc1pBRVpGZ05uYjNZeEZ6QVZCZ29Ka2lhSmsvSXNaQUVaRmdkbGVIUm5ZWHAwTVJzd0dRWURWUVFERXhKUVVscEZTVTVXVDBsRFJWTkRRVFF0UTBFd0hoY05NalF3TVRFeE1Ea3hPVE13V2hjTk1qa3dNVEE1TURreE9UTXdXakIxTVFzd0NRWURWUVFHRXdKVFFURW1NQ1FHQTFVRUNoTWRUV0Y0YVcxMWJTQlRjR1ZsWkNCVVpXTm9JRk4xY0hCc2VTQk1WRVF4RmpBVUJnTlZCQXNURFZKcGVXRmthQ0JDY21GdVkyZ3hKakFrQmdOVkJBTVRIVlJUVkMwNE9EWTBNekV4TkRVdE16azVPVGs1T1RrNU9UQXdNREF6TUZZd0VBWUhLb1pJemowQ0FRWUZLNEVFQUFvRFFnQUVvV0NLYTBTYTlGSUVyVE92MHVBa0MxVklLWHhVOW5QcHgydmxmNHloTWVqeThjMDJYSmJsRHE3dFB5ZG84bXEwYWhPTW1Obzhnd25pN1h0MUtUOVVlS09DQWdjd2dnSURNSUd0QmdOVkhSRUVnYVV3Z2FLa2daOHdnWnd4T3pBNUJnTlZCQVFNTWpFdFZGTlVmREl0VkZOVWZETXRaV1F5TW1ZeFpEZ3RaVFpoTWkweE1URTRMVGxpTlRndFpEbGhPR1l4TVdVME5EVm1NUjh3SFFZS0NaSW1pWlB5TEdRQkFRd1BNems1T1RrNU9UazVPVEF3TURBek1RMHdDd1lEVlFRTURBUXhNVEF3TVJFd0R3WURWUVFhREFoU1VsSkVNamt5T1RFYU1CZ0dBMVVFRHd3UlUzVndjR3g1SUdGamRHbDJhWFJwWlhNd0hRWURWUjBPQkJZRUZFWCtZdm1tdG5Zb0RmOUJHYktvN29jVEtZSzFNQjhHQTFVZEl3UVlNQmFBRkp2S3FxTHRtcXdza0lGelZ2cFAyUHhUKzlObk1Ic0dDQ3NHQVFVRkJ3RUJCRzh3YlRCckJnZ3JCZ0VGQlFjd0FvWmZhSFIwY0RvdkwyRnBZVFF1ZW1GMFkyRXVaMjkyTG5OaEwwTmxjblJGYm5KdmJHd3ZVRkphUlVsdWRtOXBZMlZUUTBFMExtVjRkR2RoZW5RdVoyOTJMbXh2WTJGc1gxQlNXa1ZKVGxaUFNVTkZVME5CTkMxRFFTZ3hLUzVqY25Rd0RnWURWUjBQQVFIL0JBUURBZ2VBTUR3R0NTc0dBUVFCZ2pjVkJ3UXZNQzBHSlNzR0FRUUJnamNWQ0lHR3FCMkUwUHNTaHUyZEpJZk8reG5Ud0ZWbWgvcWxaWVhaaEQ0Q0FXUUNBUkl3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdNR0NDc0dBUVVGQndNQ01DY0dDU3NHQVFRQmdqY1ZDZ1FhTUJnd0NnWUlLd1lCQlFVSEF3TXdDZ1lJS3dZQkJRVUhBd0l3Q2dZSUtvWkl6ajBFQXdJRFNBQXdSUUloQUxFL2ljaG1uV1hDVUtVYmNhM3ljaThvcXdhTHZGZEhWalFydmVJOXVxQWJBaUE5aEM0TThqZ01CQURQU3ptZDJ1aVBKQTZnS1IzTEUwM1U3NWVxYkMvclhBPT0='
+        const csid = 'TUlJQ1BqQ0NBZU9nQXdJQkFnSUdBWlNFU1E4a01Bb0dDQ3FHU000OUJBTUNNQlV4RXpBUkJnTlZCQU1NQ21WSmJuWnZhV05wYm1jd0hoY05NalV3TVRJd01UVXhOakF6V2hjTk16QXdNVEU1TWpFd01EQXdXakIxTVNZd0pBWURWUVFEREIxVVUxUXRPRGcyTkRNeE1UUTFMVE01T1RrNU9UazVPVGt3TURBd016RW1NQ1FHQTFVRUNnd2RUV0Y0YVcxMWJTQlRjR1ZsWkNCVVpXTm9JRk4xY0hCc2VTQk1WRVF4RmpBVUJnTlZCQXNNRFZKcGVXRmthQ0JDY21GdVkyZ3hDekFKQmdOVkJBWVRBbE5CTUZZd0VBWUhLb1pJemowQ0FRWUZLNEVFQUFvRFFnQUVyV1pZeTdSd1c4U0NDeFNCdVFLTFJ5WS9UTU83M1RWdlBpdWN2bTQvSFh6V0ZOUTZmWllzYkFEdm9Ydm80UTBZcEpmaFN5V3BXVjhhejQ4YlQwcndDNk9Cd1RDQnZqQU1CZ05WSFJNQkFmOEVBakFBTUlHdEJnTlZIUkVFZ2FVd2dhS2tnWjh3Z1p3eE96QTVCZ05WQkFRTU1qRXRWRk5VZkRJdFZGTlVmRE10WldReU1tWXhaRGd0WlRaaE1pMHhNVEU0TFRsaU5UZ3RaRGxoT0dZeE1XVTBORFZtTVI4d0hRWUtDWkltaVpQeUxHUUJBUXdQTXprNU9UazVPVGs1T1RBd01EQXpNUTB3Q3dZRFZRUU1EQVF4TVRBd01SRXdEd1lEVlFRYURBaFNVbEpFTWpreU9URWFNQmdHQTFVRUR3d1JVM1Z3Y0d4NUlHRmpkR2wyYVhScFpYTXdDZ1lJS29aSXpqMEVBd0lEU1FBd1JnSWhBSmsvSWl6ZzlveElnT2tudmN3ZWFpQ2RTaVNrempjN1FjeXhpWGZ1MEp2M0FpRUFudWtMR1l0VzRmWHQ3b1dmVnFuM0pTTVRmeG1VUnBYNmZsdGExM2hkM1FBPQ=='
 
         const publicKey = `-----BEGIN PUBLIC KEY-----
 MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAE2ZiSSiNp2crw0aV4AbGcxQQR7+qeZHyN
@@ -22,8 +22,8 @@ hjt5XvOGDmgiHCnE9qtzrDq/QmFnM0K+sHIkQB9hz5Bxj9QioW0tGQ==
 -----END PUBLIC KEY-----`
 
         const generateXMLInvoice = generateInvoiceXML(sampleInvoiceData);
-        const { hashedInvoiceBase64, hashedInvoiceSha256 } = genInvoiceHash({ invoiceXML: generateXMLInvoice });
-        const digitalSignature = genInvoiceDigitalSign({ invoiceHash: hashedInvoiceSha256, privateKey });
+        const { base64Hash } = genInvoiceHash({ invoiceXML: generateXMLInvoice });
+        const digitalSignature = genInvoiceDigitalSign({ invoiceHash: base64Hash, privateKey });
         const certificateHash = genCertificateHash({ certificateString: atob(csid.replace(/[\r\n]+/g, '')) });
         const cleanedCertificate = atob(csid.replace(/[\r\n]+/g, ''));
         const { certificateIssuer, certificateSerialNumber } = getInfoFromCertificate(csid);
@@ -39,7 +39,7 @@ hjt5XvOGDmgiHCnE9qtzrDq/QmFnM0K+sHIkQB9hz5Bxj9QioW0tGQ==
             certificateHash: certificateHash,
             certificateIssuer: certificateIssuer,
             certificateSerialNumber: certificateSerialNumber,
-            invoiceHash: hashedInvoiceBase64,
+            invoiceHash: base64Hash,
             digitalSignature: digitalSignature,
             cleanedCertificate: cleanedCertificate,
             signedPropertiesHash: signedPropertiesHash
@@ -48,7 +48,7 @@ hjt5XvOGDmgiHCnE9qtzrDq/QmFnM0K+sHIkQB9hz5Bxj9QioW0tGQ==
             digitalSignature: digitalSignature,
             certificatePublicKeyBuffer: publicKey,
             certificateSignature: digitalSignature,
-            invoiceHash: hashedInvoiceBase64,
+            invoiceHash: base64Hash,
             supplierVatName: 'Maximum Speed Tech Supply LTD',
             supplierVatNumber: '399999999900003',
             totalVatAmount: '150',
@@ -56,7 +56,9 @@ hjt5XvOGDmgiHCnE9qtzrDq/QmFnM0K+sHIkQB9hz5Bxj9QioW0tGQ==
             formattedDatetime: formattedTimestamp
         });
 
-        const finalXMLInvoice = generateXMLInvoice.replace('HASHED_INVOICE', hashedInvoiceBase64).replace('QR_CODE_HASHED', qr).replace('UBL_EXTENSION_CONTENT', signedInvoice);
+        const finalXMLInvoice = generateXMLInvoice.replace('HASHED_INVOICE', base64Hash)
+        .replace('QR_CODE_HASHED', qr)
+        .replace('UBL_EXTENSION_CONTENT', signedInvoice);
 
         res.set("Content-Type", "application/xml");
         res.send(finalXMLInvoice);

@@ -29,7 +29,6 @@ export default function genInvoiceDigitalSign({ invoiceHash, privateKey }: Digit
 
     // Convert the private key to PEM format (if it's raw)
     const pemPrivateKey = convertToPem(privateKey);
-    console.log('Converted PEM key:', pemPrivateKey);
 
     try {
         // Sign using the private key (PEM formatted)
