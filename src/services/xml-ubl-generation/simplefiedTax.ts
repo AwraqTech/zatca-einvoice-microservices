@@ -47,8 +47,7 @@ export default function generateInvoiceXML(invoiceData: Invoice) {
         .ele('cbc:IssueTime').txt(`${invoiceData.issueTime}`).up()
         .ele('cbc:InvoiceTypeCode', { name: invoiceData.invoiceTypeCode.name }).txt(`${invoiceData.invoiceTypeCode.value}`).up()
         .ele('cbc:DocumentCurrencyCode').txt(`${invoiceData.documentCurrencyCode}`).up()
-        .ele('cbc:TaxCurrencyCode').txt(`${invoiceData.taxCurrencyCode}`).up()
-        .ele('cbc:Note', { languageID: 'ar' }).txt(invoiceData.note).up();
+        .ele('cbc:TaxCurrencyCode').txt(`${invoiceData.taxCurrencyCode}`).up().up();
 
     // AdditionalDocumentReferences
     invoiceData.additionalDocumentReferences.forEach(ref => {

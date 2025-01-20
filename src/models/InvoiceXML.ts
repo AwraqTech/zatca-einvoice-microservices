@@ -53,6 +53,7 @@ interface PartyTaxScheme {
 interface AllowanceCharge {
     chargeIndicator: boolean;
     allowanceChargeReason: string;
+    allowanceChargeReasonCode: 'AEB';
     amount: { currencyId: string; value: number };
     taxCategory: TaxCategory;
 }

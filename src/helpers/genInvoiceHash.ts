@@ -1,43 +1,59 @@
 import { createHash } from "crypto";
 import { XmlCanonicalizer } from "xmldsigjs";
-import xmldom from "xmldom";
-import xmlParser from "./xmlParser";
+import { DOMParser } from "xmldom"; // Use xmldom for parsing strings into DOM nodes
+import XMLDocument from "./xmlParser";
 
 interface InvoiceHashProps {
     invoiceXML: string;
 }
 
-// Function to canonicalize and clean the XML
-const getPureInvoiceString = async (invoiceXML: string): Promise<string> => {
-    const parsedXML = await xmlParser(invoiceXML);
-
-    // Clone the parsed XML and remove unnecessary nodes
-    const clonedXML = JSON.parse(JSON.stringify(parsedXML)); // Deep clone
-    delete clonedXML["Invoice"]["ext:UBLExtensions"];
-    delete clonedXML["Invoice"]["cbc:UBLVersionID"];
-    delete clonedXML["Invoice"]["cac:Signature"];
-    const additionalDocRefs = clonedXML["Invoice"]["cac:AdditionalDocumentReference"];
-    if (Array.isArray(additionalDocRefs)) {
-        clonedXML["Invoice"]["cac:AdditionalDocumentReference"] = additionalDocRefs.filter(
-            (ref: any) => ref["cbc:ID"] !== "QR"
-        );
-    }
-
-    // Rebuild the XML string
-    const xmlString = new xmldom.DOMParser().parseFromString(JSON.stringify(clonedXML));
-    const canonicalizer = new XmlCanonicalizer(false, false);
-    const canonicalizedXmlStr = canonicalizer.Canonicalize(xmlString);
-
-    return canonicalizedXmlStr;
+/**
+ * Removes the XML declaration (if any) from the invoice XML string.
+ * @param xmlString Raw XML string.
+ * @returns Cleaned XML string without the declaration.
+ */
+const removeXMLDeclaration = (xmlString: string): string => {
+    return xmlString.replace(/<\?xml[^>]*\?>/, ''); // Regular expression to remove XML declaration
 };
 
-// Main function to generate the invoice hash
-export default async function genInvoiceHash({ invoiceXML }: InvoiceHashProps): Promise<string> {
-    try {
-        // Get the cleaned and canonicalized XML string
-        let pureInvoiceString = await getPureInvoiceString(invoiceXML);
+/**
+ * Cleans and canonicalizes the invoice XML.
+ * @param invoiceXML Raw XML string.
+ * @returns Canonicalized XML string.
+ */
+const getPureInvoiceString = (invoiceXML: string): string => {
+    const cleanedXML = removeXMLDeclaration(invoiceXML);
 
-        // Adjust the XML structure for specific ZATCA requirements
+    const doc = new XMLDocument(cleanedXML);
+
+    // Remove unnecessary nodes
+    doc.delete("Invoice/ext:UBLExtensions");
+    doc.delete("Invoice/cbc:UBLVersionID");
+    doc.delete("Invoice/cac:Signature");
+    doc.delete("Invoice/cac:AdditionalDocumentReference", { "cbc:ID": "QR" });
+
+    // Convert cleaned XML back to a string
+    const xmlString = doc.toString();
+
+    // Parse the string into a DOM Document
+    const dom = new DOMParser().parseFromString(xmlString, "application/xml");
+
+    // Canonicalize the DOM Document
+    const canonicalizer = new XmlCanonicalizer(false, false);
+    return canonicalizer.Canonicalize(dom);
+};
+
+/**
+ * Generates a hash for the invoice.
+ * @param invoiceXML Raw XML string.
+ * @returns An object containing Base64-encoded and plain SHA-256 hashes.
+ */
+const genInvoiceHash = ({ invoiceXML }: InvoiceHashProps) => {
+    try {
+        // Step 1: Get the pure (canonicalized) invoice string
+        let pureInvoiceString = getPureInvoiceString(invoiceXML);
+
+        // Adjustments for ZATCA quirks
         pureInvoiceString = pureInvoiceString.replace(
             "<cbc:ProfileID>",
             "\n    <cbc:ProfileID>"
@@ -47,12 +63,15 @@ export default async function genInvoiceHash({ invoiceXML }: InvoiceHashProps): 
             "\n    \n    <cac:AccountingSupplierParty>"
         );
 
-        // Generate the SHA256 hash in raw binary form (32 bytes)
-        const hashBuffer = createHash("sha256").update(pureInvoiceString).digest();
+        // Step 2: Generate both Base64-encoded and SHA-256 hashes
+        const hashedInvoiceBase64 = createHash("sha256").update(pureInvoiceString).digest("base64");
+        const hashedInvoiceSha256 = createHash("sha256").update(pureInvoiceString).digest("hex"); // Hex format for SHA-256
 
-        // Return the raw 32-byte hash (hex or base64 encoding for QR code)
-        return hashBuffer.toString("base64");  // Return base64-encoded hash for the QR code
+        // Return both hashes as an object
+        return { hashedInvoiceBase64, hashedInvoiceSha256 };
     } catch (error: any) {
         throw new Error(`Failed to generate invoice hash: ${error.message}`);
     }
-}
+};
+
+export default genInvoiceHash;

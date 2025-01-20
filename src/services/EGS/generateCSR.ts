@@ -15,8 +15,9 @@ import path from 'path';
  * @param {string} invoiceType - Invoice Type
  * @param {string} locationAddress - Location Address
  * @param {string} industryBusinessCategory - Industry Business Category
+ * @param {string} privateKeyPassword - Password for protecting the private key (optional)
  * 
- * @returns {Object} - Contains `csrPem` and `privateKeyPem` (both in PEM format).
+ * @returns {Object} - Contains `csrPem`, `privateKeyPem`, `publicKeyPem`, and `publicKeyClean` (all in PEM format).
  */
 export default function generateCSR(
     commonName: string,
@@ -27,12 +28,12 @@ export default function generateCSR(
     countryName: string,
     invoiceType: string,
     locationAddress: string,
-    industryBusinessCategory: string
+    industryBusinessCategory: string,
+    privateKeyPassword?: string // Optional password for the private key
 ) {
     try {
         // Prepare the OpenSSL configuration as a string
         const opensslConfig = `
-# Your OpenSSL configuration as provided
 [req]
 prompt = no
 utf8 = no
@@ -40,7 +41,7 @@ distinguished_name = my_req_dn_prompt
 req_extensions = v3_req
 
 [v3_req]
-1.3.6.1.4.1.311.20.2 = ASN1:UTF8String:SET_PRODUCTION_VALUE
+1.3.6.1.4.1.311.20.2 = ASN1:UTF8String:TSTZATCA-Code-Signing
 subjectAltName = dirName:dir_sect
 
 [dir_sect]
@@ -70,8 +71,17 @@ countryName = ${countryName}
         const csrFilePath = path.join(tmpdir(), `csr_${Date.now()}.pem`);
         const publicKeyPath = path.join(tmpdir(), `public_key_${Date.now()}.pem`);
 
-        // Generate the CSR and private key
-        const opensslCmd = `openssl req -new -newkey ec:${ecParamFile} -keyout ${keyFilePath} -out ${csrFilePath} -config "${tempConfigFile}" -subj "/CN=${commonName}/O=${organizationName}/OU=${organizationUnitName}/C=${countryName}" -nodes`;
+        // Construct the OpenSSL command to generate the private key and CSR
+        let opensslCmd = `openssl req -new -newkey ec:${ecParamFile} -keyout ${keyFilePath} -out ${csrFilePath} -config "${tempConfigFile}" -subj "/CN=${commonName}/O=${organizationName}/OU=${organizationUnitName}/C=${countryName}"`;
+
+        // If a password is provided, add it to the command
+        if (privateKeyPassword) {
+            opensslCmd += ` -passout pass:${privateKeyPassword}`;
+        } else {
+            opensslCmd += ' -nodes'; // No password (private key unencrypted)
+        }
+
+        // Run the OpenSSL command to generate the CSR and private key
         execSync(opensslCmd, { encoding: 'utf8' });
 
         // Extract the public key from the private key
@@ -96,8 +106,14 @@ countryName = ${countryName}
         unlinkSync(csrFilePath);
         unlinkSync(publicKeyPath);
 
+        // Ensure private key is properly formatted to match "BEGIN EC PRIVATE KEY"
+        let formattedPrivateKey = privateKeyPem.trim();
+        if (!formattedPrivateKey.startsWith('-----BEGIN EC PRIVATE KEY-----')) {
+            formattedPrivateKey = `-----BEGIN EC PRIVATE KEY-----\n${formattedPrivateKey}\n-----END EC PRIVATE KEY-----`;
+        }
+
         // Return CSR, private key, and public key
-        return { csrPem, privateKeyPem, publicKeyPem, publicKeyClean };
+        return { csrPem, privateKeyPem: formattedPrivateKey, publicKeyPem, publicKeyClean };
     } catch (error: unknown) {
         if (error instanceof Error) {
             console.error('Error:', error.message);

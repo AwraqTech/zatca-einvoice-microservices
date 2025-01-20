@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { validateDataDictionaryMandatory } from "../models/ValidDataDictionary.model";
-import { invoiceTaxGenerationPdf } from "../services/pdf-generation/InvoiceTax";
+import { invoiceTaxGenerationPdf } from "../services/pdf-generation/SimplefiedTax";
 import { DataDictionaryMandatory } from "../models/DataDictionaryMandatory";
 import { generateQRCodeBase64 } from "../helpers/qrCodeGenEcode";
+import { taxInvoicePdf } from "../services/pdf-generation/InvoiceTax";
 
 export async function generateInvoiceController(req: Request, res: Response) {
     try {
@@ -21,7 +22,7 @@ export async function generateInvoiceController(req: Request, res: Response) {
             : new Date(validatedData.invoiceIssueTime).toISOString(); // Convert to Date if needed
 
         // Generate PDF document
-        const doc = invoiceTaxGenerationPdf(validatedData, '');
+        const doc = taxInvoicePdf(validatedData, '');
 
         res.setHeader("Content-Type", "application/pdf");
         res.setHeader("Content-Disposition", `attachment; filename="${data.invoiceNumber}.pdf"`);

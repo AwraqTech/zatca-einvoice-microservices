@@ -3,7 +3,7 @@ import { Invoice } from "../../models/InvoiceXML";
 const sampleInvoiceData: Invoice = {
     profileId: "12345",
     id: "SME00010",
-    uuid: "123e4567-e89b-12d3-a456-426614174000",
+    uuid: "ed22f1d8-e6a2-1118-9b58-d9a8f11e445f",
     issueDate: "2024-01-01T00:00:00Z",
     issueTime: "12:30:45",
     invoiceCounterValue: 10,
@@ -32,9 +32,9 @@ const sampleInvoiceData: Invoice = {
         }
     ],
     accountingSupplierParty: {
-        partyIdentification: { id: "1234567890", schemeId: "CRN" },
+        partyIdentification: { id: "3999999999", schemeId: "CRN" },
         postalAddress: {
-            streetName: "Main St",
+            streetName: "RRRD2929",
             buildingNumber: "1234",
             plotIdentification: "A1",
             citySubdivisionName: "Downtown",
@@ -42,8 +42,8 @@ const sampleInvoiceData: Invoice = {
             postalZone: "10001",
             country: { identificationCode: "SA" }
         },
-        partyTaxScheme: { companyId: "312345678901233", taxScheme: { id: "VAT" } },
-        partyLegalEntity: { registrationName: "Sample Corp" }
+        partyTaxScheme: { companyId: "399999999900003", taxScheme: { id: "VAT" } },
+        partyLegalEntity: { registrationName: "Maximum Speed Tech Supply LTD" }
     },
     accountingCustomerParty: {
         partyIdentification: { id: "0987654321", schemeId: "CRN" },
@@ -63,12 +63,14 @@ const sampleInvoiceData: Invoice = {
         {
             chargeIndicator: true,
             allowanceChargeReason: "Late Fee",
+            allowanceChargeReasonCode: 'AEB',
             amount: { currencyId: "SAR", value: 50 },
             taxCategory: { id: "S", percent: 15, taxScheme: { id: "VAT" } }
         },
         {
             chargeIndicator: false,
             allowanceChargeReason: "Promotional Discount",
+            allowanceChargeReasonCode: 'AEB',
             amount: { currencyId: "SAR", value: 25 },
             taxCategory: { id: "S", percent: 15, taxScheme: { id: "VAT" } }
         }
@@ -121,6 +123,7 @@ const sampleInvoiceData: Invoice = {
                 allowanceCharge: {
                     chargeIndicator: true,
                     allowanceChargeReason: "Discount",
+                    allowanceChargeReasonCode: 'AEB',
                     amount: { currencyId: "SAR", value: 10 },
                     taxCategory: { id: "S", percent: 15, taxScheme: { id: "VAT" } }
                 }
